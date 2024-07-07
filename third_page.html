@@ -1,0 +1,154 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Records</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            width: 80%;
+            max-width: 800px;
+            text-align: center;
+        }
+        h2 {
+            margin-top: 0;
+            color: #333;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 10px;
+        }
+        input[type="text"], input[type="number"] {
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px;
+            background: #28a745;
+            border: none;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+        button:hover {
+            background: #218838;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .messages {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+        .messages li {
+            padding: 10px;
+            margin-bottom: 10px;
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+            border-radius: 4px;
+        }
+    </style>
+    <script>
+        function showEntryButton(index) {
+            document.querySelectorAll('.entryButton').forEach(button => button.style.display = 'none');
+            document.getElementById('entryButton' + index).style.display = 'block';
+        }
+
+        function showEntryForm(index) {
+            document.querySelectorAll('.entryForm').forEach(form => form.style.display = 'none');
+            document.getElementById('entryForm' + index).style.display = 'block';
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h2>Search Records</h2>
+        <form action="/search" method="post">
+            <label for="book_id">BOOK_ID:</label>
+            <input type="text" id="book_id" name="book_id">
+            <label for="instcd">INSTCD:</label>
+            <input type="text" id="instcd" name="instcd">
+            <button type="submit">Search</button>
+        </form>
+        <div class="results">
+            {% if records %}
+                <table>
+                    <tr>
+                        <th>PHY_ID</th>
+                        <th>PRS_ID</th>
+                        <th>BOOK_ID</th>
+                        <th>INSTCD</th>
+                        <th>Image</th>
+                        <th>Image Link</th>
+                        <th>Product Name</th>
+                        <th>Product Quantity</th>
+                        <th>Entry</th>
+                    </tr>
+                    {% for record in records %}
+                        <tr>
+                            <td>{{ record[1] }}</td>
+                            <td>{{ record[2] }}</td>
+                            <td>{{ record[3] }}</td>
+                            <td>{{ record[4] }}</td>
+                            <td><img src="{{ record[5] }}" alt="Image" width="50" onclick="showEntryButton('{{ loop.index }}')"></td>
+                            <td><a href="{{ record[6] }}" target="_blank">View Image</a></td>
+                            <td>{{ record[7] }}</td>
+                            <td>{{ record[8] }}</td>
+                            <td>
+                                <button id="entryButton{{ loop.index }}" type="button" class="entryButton" style="display:none;" onclick="showEntryForm('{{ loop.index }}')">Entry</button>
+                            </td>
+                        </tr>
+                        <tr id="entryForm{{ loop.index }}" class="entryForm" style="display:none;">
+                            <td colspan="9">
+                                <form action="/entry" method="post">
+                                    <input type="hidden" name="record_id" value="{{ record[0] }}">
+                                    <label for="product_name">Product Name:</label>
+                                    <input type="text" id="product_name" name="product_name" required>
+                                    <label for="product_quantity">Product Quantity:</label>
+                                    <input type="number" id="product_quantity" name="product_quantity" required>
+                                    <button type="submit">Submit</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            {% else %}
+                <p>No records found</p>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
