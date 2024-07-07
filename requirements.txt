@@ -1,0 +1,14 @@
+/project
+    /templates
+        login.html
+        second_page.html
+        third_page.html
+    /static
+        /css
+            styles.css
+    app.py
+
+
+
+pip install openpyxl
+pip install pandas tk mysql-connector-python
